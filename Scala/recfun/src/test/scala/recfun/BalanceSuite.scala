@@ -9,6 +9,10 @@ import org.scalatest.junit.JUnitRunner
 class BalanceSuite extends FunSuite {
   import Main.balance
 
+  test("balance: big one") {
+    assert(balance("(((((((((()))))))))(((((((((())(((((()))))))))))))))".toList))
+  }
+  
   test("balance: '(if (zero? x) max (/ 1 x))' is balanced") {
     assert(balance("(if (zero? x) max (/ 1 x))".toList))
   }
@@ -21,7 +25,17 @@ class BalanceSuite extends FunSuite {
     assert(!balance(":-)".toList))
   }
 
+  test("balance: '(.....' is unbalanced") {
+    assert(!balance("(.....".toList))
+  }
+
   test("balance: counting is not enough") {
     assert(!balance("())(".toList))
   }
+  
+  test("balance: empty is balanced") {
+    assert(balance("".toList))
+  }
+  
+
 }

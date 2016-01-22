@@ -2,19 +2,64 @@ submitProjectName := "funsets"
 
 scalaVersion := "2.11.5"
 
-scalacOptions ++= Seq(
-  "-deprecation",
-  "-unchecked",
-  "-optimise",
-  "-Yinline-warnings"
-)
+scalacOptions ++= Seq("-deprecation", "-feature")
 
-fork := true
+libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.4" % "test"
 
-javaOptions += "-Xmx2G"
+libraryDependencies += "junit" % "junit" % "4.10" % "test"
 
-parallelExecution in Test := false
+// This setting defines the project to which a solution is submitted. When creating a
+// handout, the 'createHandout' task will make sure that its value is correct.
+submitProjectName := "recfun"
 
+libraryDependencies ++= {
+  val c = currentProject.value
+  if (c.isEmpty || c == "quickcheck") Seq(
+    "org.scalacheck" %% "scalacheck" % "1.12.1"
+  )
+  else Seq.empty
+}
+
+libraryDependencies ++= {
+  val c = currentProject.value
+  if (c.isEmpty || c == "nodescala" || c == "suggestions") Seq(
+    "com.netflix.rxjava" % "rxjava-scala" % "0.15.0",
+    "org.json4s" %% "json4s-native" % "3.2.11",
+    "org.scala-lang.modules" %% "scala-swing" % "1.0.1",
+    "net.databinder.dispatch" %% "dispatch-core" % "0.11.0",
+    "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+    "org.slf4j" % "slf4j-api" % "1.7.5",
+    "org.slf4j" % "slf4j-simple" % "1.7.5",
+    "com.squareup.retrofit" % "retrofit" % "1.0.0",
+    "org.scala-lang.modules" %% "scala-async" % "0.9.2"
+  )
+  else Seq.empty
+}
+
+libraryDependencies ++= {
+  val c = currentProject.value
+  if (c.isEmpty || c == "actorbintree" || c == "kvstore") Seq(
+    "com.typesafe.akka" %% "akka-actor" % "2.3.9",
+    "com.typesafe.akka" %% "akka-testkit" % "2.3.9"
+  )
+  else Seq.empty
+}
+
+libraryDependencies ++= {
+  val c = currentProject.value
+  if (c.isEmpty || parProgProjects(c)) Seq(
+    "com.storm-enroute" %% "scalameter-core" % "0.6",
+    "com.github.scala-blitz" %% "scala-blitz" % "1.1",
+    "com.storm-enroute" %% "scalameter" % "0.6" % "test"
+  )
+  else Seq.empty
+}
+
+fork := {
+  val c = currentProject.value
+  if (parProgProjects(c)) true
+  else false
+}
 
 // See documentation in ProgFunBuild.scala
 projectDetailsMap := {
